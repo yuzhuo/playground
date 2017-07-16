@@ -8,43 +8,45 @@
 
 using namespace std;
 
-
-class TestThread : public Thread
+class TestClosure : public Closure
 {
 public:
-    TestThread(string name)
-        : Thread(false)
-        , name_(name)
-    {}
+    TestClosure(int id)
+        : id_(id)
+    {  }
 
-    virtual void run()
+    void run() override
     {
-        for (int i = 0; i < 10; ++i)
-        {
-            sleep(1);
-            printf("%s thread loop: %d\n", name_.c_str(), rand() % 100);
-        }
-        printf("%s loop done!\n", name_.c_str());
+        sleep(1);
+        printf("job %d done!\n", id_);
     }
 
 private:
-    string name_;
+    int id_;
 };
+
 
 int main()
 {
-    srand(time(NULL));
+    ThreadPool tp(3);
 
-    TestThread test1("t1");
-    TestThread test2("t2");
-    test1.start();
-    test2.start();
-
-    for (int i = 0; i < 20; ++i) {
-        sleep(1);
-        printf("main loop: %d\n", i);
+    // resource leak is on purpose
+    for (int i = 0; i < 3; ++i) {
+        Closure* c = new TestClosure(i);
+        tp.add_job(c);
     }
-    printf("main loop done!\n");
+
+    tp.start_all_workers();
+
+    printf("main begin sleep 5\n");
+    sleep(5);
+    printf("main end sleep 5\n");
+
+    // resource leak is on purpose
+    for (int i = 10; i < 20; ++i) {
+        Closure* c = new TestClosure(i);
+        tp.add_job(c);
+    }
     
     return 0;
 }

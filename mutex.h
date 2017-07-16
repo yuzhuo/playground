@@ -1,5 +1,8 @@
 
-#include <stdio.h>
+#ifndef __MUTEX_H__
+#define __MUTEX_H__
+
+//#include <stdio.h>
 #include "pthread.h"
 
 class Condition;
@@ -12,6 +15,9 @@ public:
         pthread_mutex_init(&mutex_, NULL);
         //printf("MutexLock()\n");
     }
+
+    MutexLock(const MutexLock&) = delete;
+    MutexLock& operator=(const MutexLock&) = delete;
 
     ~MutexLock()
     {
@@ -33,9 +39,6 @@ public:
     }
     
 private:
-    MutexLock(const MutexLock&);
-    MutexLock& operator=(const MutexLock&);
-
     friend class Condition;
     pthread_mutex_t* get_pthread_mutex()
     {
@@ -56,6 +59,9 @@ public:
         mutex_.lock();
     }
 
+    MutexLockGuard(const MutexLockGuard&) = delete;
+    MutexLockGuard& operator=(const MutexLockGuard&) = delete;
+
     ~MutexLockGuard()
     {
         //printf("~MutexLockGuard()\n");
@@ -63,9 +69,6 @@ public:
     }
 
 private:
-    MutexLockGuard(const MutexLockGuard&);
-    MutexLockGuard& operator=(const MutexLockGuard&);
-
     MutexLock &mutex_;
 };
 #define MutexLockGuard(x) no_variable_specified_err
@@ -73,20 +76,22 @@ private:
 class Condition
 {
 public:
-    Condition(MutexLock &mutex)
-        : mutex_(mutex)
+    Condition()
     {
         pthread_cond_init(&cond_, NULL);
     }
+
+    Condition(const Condition&) = delete;
+    Condition& operator=(const Condition&) = delete;
 
     ~Condition()
     {
         pthread_cond_destroy(&cond_);
     }
 
-    void wait()
+    void wait(MutexLock& mutex)
     {
-        pthread_cond_wait(&cond_, mutex_.get_pthread_mutex());
+        pthread_cond_wait(&cond_, mutex.get_pthread_mutex());
     }
 
     void notify()
@@ -100,11 +105,7 @@ public:
     }
 
 private:
-    Condition(const Condition&);
-    Condition& operator=(const Condition&);
-
-private:
     pthread_cond_t cond_;
-    MutexLock& mutex_;
 };
 
+#endif /* __MUTEX_H__ */

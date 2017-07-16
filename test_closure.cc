@@ -2,6 +2,7 @@
 #include <iostream>
 #include <functional>
 #include <utility>
+#include "closure.h"
 using namespace std;
 
 int func1(int a1)
@@ -43,39 +44,50 @@ struct FuncObj2
 class Test
 {
 public:
-    Test() {}
+    Test() { cout << "Test::Test()" << endl; }
 
-    static int test(int a1)
+    Test(const Test&)
     {
-        return a1;
+        cout << "Test::Test(const Test&)" << endl;
     }
-};
 
-template<typename Func, typename ...Args>
-class Closure
-{
-    using bind_type = decltype(bind(declval<Func>(), declval<Args>()...));
-public:
-    Closure(Func f, Args ...args)
-        : func_(bind(f, args...))
+    Test& operator=(const Test&)
     {
+        cout << "Test::Operator=" << endl;
     }
 
     void operator()()
     {
-        cout << func_() << endl;
+        cout << "Test::operator () called." << endl;
     }
 
-private:
-    const bind_type& func_;
 };
 
-template<typename Func, typename ...Args>
-Closure<Func, Args...>
-make_closure(Func f, Args ...args)
-{
-    return Closure<Func, Args...>(f, args...);
-}
+//template<typename Func, typename ...Args>
+//class Closure
+//{
+    //using bind_type = decltype(bind(declval<Func>(), declval<Args>()...));
+//public:
+    //Closure(Func f, Args ...args)
+        //: func_(bind(f, args...))
+    //{
+    //}
+
+    //void operator()()
+    //{
+        //cout << func_() << endl;
+    //}
+
+//private:
+    //const bind_type& func_;
+//};
+
+//template<typename Func, typename ...Args>
+//Closure<Func, Args...>
+//make_closure(Func f, Args ...args)
+//{
+    //return Closure<Func, Args...>(f, args...);
+//}
 
 int main()
 {
@@ -106,11 +118,8 @@ int main()
     //auto s1 = bind(Test::test, 1000);
     //cout << s1() << endl;
 
-    Closure<int(*)(int), int> c1(func1, 1000);
-    c1();
-
-    auto c2 = make_closure(func1, 1);
-    c2();
+    auto c = VariadicArgsClosure<void(void)>(Test());
+    c.run();
 
     return 0;
 }
