@@ -27,7 +27,7 @@ public:
             x += 1;
         }
         y = 1;
-        cond.notify();
+        cond.notify_all();
         cout << "thread2 end work" << endl;
     }
 

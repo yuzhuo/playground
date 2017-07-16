@@ -17,7 +17,7 @@ void Thread::start()
 
 void WorkerThread::join()
 {
-    pthread_join(tid_, nullptr);
+    pthread_join(tid_, NULL);
 }
 
 
