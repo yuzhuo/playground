@@ -1,0 +1,121 @@
+
+#include <algorithm>
+#include <memory>
+#include <iostream>
+#include <string>
+#include <stdio.h>
+using namespace std;
+
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args)
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
+class Test
+{
+public:
+    Test(int, int&) {  }
+
+};
+
+template <typename R, typename... T>
+class VariadicArgsClosure
+{
+public:
+
+  using bind_type = decltype(std::bind(std::declval<std::function<R(T...)>>(),std::declval<T>()...));
+
+  VariadicArgsClosure(std::function<R(T...)> f, T&&... args)
+    : bind_(f, std::forward<T>(args)...)
+  {
+      cout << "VariadicArgsClosure" << endl;
+  }
+
+  virtual void run() 
+  { 
+      //result_ = bind_();
+      bind_();
+  }
+
+  //R get_result()
+  //{
+      //return result_;
+  //}
+
+private:
+  bind_type bind_;
+  //R result_;
+};
+
+template <typename R, typename... T, typename... Args>
+VariadicArgsClosure<R, T...>
+make_closure(R(*f)(T...), Args&&... args)
+{
+    cout << "make_closure" << endl;
+    return VariadicArgsClosure<R, T...>(f, std::forward<Args>(args)...);
+}
+
+char func1(int, double)
+{
+    return '7';
+}
+
+string func2(int)
+{
+    return "fuck";
+}
+
+struct Pair
+{
+    //Pair()
+    //{
+        //cout << "Pair" << endl;
+    //}
+    ~Pair()
+    {
+        cout << "~Pair" << endl;
+    }
+    Pair(int _x, int _y, int _z)
+    {
+        cout << "Pair(x, y, z)" << endl;
+        x = _x;
+        y = _y;
+        z = _z;
+    }
+    int x;
+    int y;
+    int z;
+};
+
+Pair func3(int x, int y, int z)
+{
+    return Pair(x, y, z);
+}
+
+using bind_type = decltype(std::bind(std::declval<std::function<Pair(int, int, int)>>(), declval<int>(), declval<int>(), declval<int>()));
+
+int main()
+{
+    auto c1 = make_closure(func1, 1.0, 1.0);
+    c1.run();
+    auto r1 = c1.get_result();
+    cout << r1 << endl;
+
+    auto c2 = make_closure(func2, 1.0);
+    c2.run();
+    auto r2 = c2.get_result();
+    cout << r2 << endl;
+
+    
+    auto c3 = make_closure(func3, 1.0, 2.0, 3.0);
+    c3.run();
+    auto r3 = c3.get_result();
+    VariadicArgsClosure<Pair, int, int, int> vc(func3, 1, 2, 3);
+
+    function<Pair(int, int, int)> f(func3);
+    bind_type dd(func3, 1.0, 10.0, 10.0);
+
+
+    return 0;
+}

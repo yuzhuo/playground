@@ -33,7 +33,7 @@ public:
 
     void unlock()
     {
-        int ret = pthread_mutex_unlock(&mutex_);
+        pthread_mutex_unlock(&mutex_);
         //printf("MutexLock::unlock()\n");
         //printf("unlock ret: %d\n", ret);
     }
