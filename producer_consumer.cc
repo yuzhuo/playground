@@ -1,6 +1,5 @@
 
-
-#include <stdio.h>
+#include "log.h"
 
 #include "thread.h"
 #include "pc_queue.h"
@@ -15,7 +14,8 @@ public:
         , ch_('a')
         , id_(Producer::id_generator_)
     {
-        printf("create a producer %d\n", id_);
+        LOG("create a producer %", id_);
+
         pc_queue_.add_a_producer();
         Producer::id_generator_ += 1;
     }
@@ -27,7 +27,7 @@ public:
             ++ch_;
 
             if ('h' == ch_) {
-                printf("producer %d exits.\n", id_);
+                LOG("producer % exits.", id_);
                 pc_queue_.remove_a_producer();
                 pthread_exit(NULL);
             }
@@ -59,7 +59,7 @@ public:
             char ch;
             pc_queue_.consume(ch);
         }
-        printf(" *** consumer %d exits.\n", id_);
+        LOG(" *** consumer % exits.", id_);
     }
 
 private:
@@ -87,13 +87,13 @@ int main()
     c1.start();
     c2.start();
 
-    printf("main before join\n");
+    LOG("main before join");
     p1.join();
     p2.join();
     p3.join();
     c1.join();
     c2.join();
-    printf("main after join\n");
+    LOG("main after join");
 
     return 0;
 }

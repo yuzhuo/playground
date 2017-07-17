@@ -2,9 +2,9 @@
 #ifndef __PC_QUEUE_H__
 #define __PC_QUEUE_H__
 
-#include <queue>
-#include <stdio.h>
+#include "log.h"
 
+#include <queue>
 #include "mutex.h"
 
 template <typename Elem>
@@ -27,17 +27,21 @@ public:
 
         while (0 == buf_.size()) {
             if (!has_work_todo()) {
-                printf(" *** no work to do\n");
+                LOG(" *** no work to do");
+
                 return -1;
             }
-            printf(" *** wait to consume. producers: %d\n", n_producer_);
+
+            LOG(" *** wait to consume. producers: %", n_producer_);
+
             empty_.wait(mutex_);
         }
 
         elem = buf_.front();
         buf_.pop();
 
-        printf(" *** consumer consumes an element\n");
+        LOG(" *** consumer consumes an element");
+
         full_.notify_all();
         return 0;
     }
@@ -53,7 +57,7 @@ public:
 
         buf_.push(elem);
 
-        printf("produces an element\n");
+        LOG("produces an element");
         empty_.notify_all();
     }
 
@@ -66,7 +70,8 @@ public:
     {
         --n_producer_;
         if (0 == n_producer_) {
-            printf("notify all consumers.\n");
+            LOG("notify all consumers.");
+
             empty_.notify_all();
         }
     }

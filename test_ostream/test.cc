@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include "thread.h"
 #include <unistd.h>
 
 class Date
@@ -40,13 +41,31 @@ std::ostream& operator<<(std::ostream& os, const Date& date)
     return os;
 }
 
+class TestThread : public NonjoinableThread
+{
+protected:
+    virtual void run() override
+    {
+        std::cout << pthread_self() << std::endl;
+        sleep(100);
+    }
+
+};
 
 int main()
 {
     Date d(2017, 10, 7);
     std::cout << d;
     std::cout << "main thread id: " << pthread_self() << std::endl;
+    TestThread t1;
+    TestThread t2;
+    TestThread t3;
+    t1.start();
+    t2.start();
+    t3.start();
+
+    sleep(100);
+    std::cout << "main thread exits" << std::endl;
 
     return 0;
 }
-

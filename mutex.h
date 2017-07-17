@@ -2,7 +2,8 @@
 #ifndef __MUTEX_H__
 #define __MUTEX_H__
 
-//#include <stdio.h>
+#include "log.h"
+
 #include "pthread.h"
 
 class Condition;
@@ -13,7 +14,8 @@ public:
     MutexLock()
     {
         pthread_mutex_init(&mutex_, NULL);
-        //printf("MutexLock()\n");
+        
+        //LOG_METHOD();
     }
 
     MutexLock(const MutexLock&) = delete;
@@ -22,20 +24,22 @@ public:
     ~MutexLock()
     {
         pthread_mutex_destroy(&mutex_);
-        //printf("~MutexLock()\n");
+
+        //LOG_METHOD();
     }
 
     void lock()
     {
         pthread_mutex_lock(&mutex_);
-        //printf("MutexLock::lock()\n");
+
+        //LOG_METHOD();
     }
 
     void unlock()
     {
         pthread_mutex_unlock(&mutex_);
-        //printf("MutexLock::unlock()\n");
-        //printf("unlock ret: %d\n", ret);
+
+        //LOG_METHOD();
     }
     
 private:
@@ -55,7 +59,8 @@ public:
     MutexLockGuard(MutexLock& mutex)
         : mutex_(mutex)
     {
-        //printf("MutexLockGuard()\n");
+        //LOG_METHOD();
+
         mutex_.lock();
     }
 
@@ -64,7 +69,8 @@ public:
 
     ~MutexLockGuard()
     {
-        //printf("~MutexLockGuard()\n");
+        //LOG_METHOD();
+
         mutex_.unlock();
     }
 

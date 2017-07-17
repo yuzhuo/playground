@@ -1,6 +1,10 @@
 
+#ifndef __THREAD_POOL_H__
+#define __THREAD_POOL_H__
+
+#include "log.h"
+
 #include <vector>
-#include <stdio.h>
 
 #include "thread.h"
 #include "closure.h"
@@ -71,7 +75,7 @@ private:
             tp->pc_queue_.consume(c);
             c->run();
         }
-        printf("a thread exit\n");
+        LOG("a thread exit");
     }
 
     void begin_job()
@@ -82,7 +86,7 @@ private:
     void end_job()
     {
         pc_queue_.remove_a_producer();
-        printf("producer exit.\n");
+        LOG("producer exit.");
     }
 
 private:
@@ -91,3 +95,4 @@ private:
     int pool_size_;
 };
 
+#endif /* __THREAD_POOL_H__ */
