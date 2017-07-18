@@ -22,6 +22,24 @@ void func3()
     func2();
 }
 
+enum LogLevel {
+    kDebug,
+    kInfo,
+    kWarning,
+    kError,
+    kCritical,
+};
+
+class Test
+{
+public:
+    Test()
+    {
+        cout << kDebug << endl;
+    }
+
+};
+
 int main()
 {
     cout << __func__ << endl;
@@ -30,8 +48,10 @@ int main()
     cout << __FILE__ << endl;
     cout << __cplusplus << endl;
     cout << __LINE__ << endl;
+    cout << kDebug << endl;
 
-    assert(1 == 2);
+    Test t;
+
 
     return 0;
 }

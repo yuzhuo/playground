@@ -1,6 +1,4 @@
 
-#include <cstdio>
-#include <string>
 #include <unistd.h>
 #include <stdlib.h>
 
@@ -18,7 +16,7 @@ public:
     void run() override
     {
         sleep(1);
-        printf("job %d done!\n", id_);
+        LOG_INFO("job % done!\n", id_);
     }
 
 private:
@@ -38,9 +36,9 @@ int main()
 
     tp.start_all_workers();
 
-    printf("main begin sleep 5\n");
+    LOG_INFO("main begin sleep 5");
     sleep(5);
-    printf("main end sleep 5\n");
+    LOG_INFO("main end sleep 5");
 
     // resource leak is on purpose
     for (int i = 10; i < 20; ++i) {

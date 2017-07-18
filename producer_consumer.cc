@@ -14,7 +14,7 @@ public:
         , ch_('a')
         , id_(Producer::id_generator_)
     {
-        LOG("create a producer %", id_);
+        LOG_INFO("create a producer %", id_);
 
         pc_queue_.add_a_producer();
         Producer::id_generator_ += 1;
@@ -27,7 +27,7 @@ public:
             ++ch_;
 
             if ('h' == ch_) {
-                LOG("producer % exits.", id_);
+                LOG_INFO("producer % exits.", id_);
                 pc_queue_.remove_a_producer();
                 pthread_exit(NULL);
             }
@@ -59,7 +59,7 @@ public:
             char ch;
             pc_queue_.consume(ch);
         }
-        LOG(" *** consumer % exits.", id_);
+        LOG_INFO(" *** consumer % exits.", id_);
     }
 
 private:
@@ -87,13 +87,13 @@ int main()
     c1.start();
     c2.start();
 
-    LOG("main before join");
+    LOG_INFO("main before join");
     p1.join();
     p2.join();
     p3.join();
     c1.join();
     c2.join();
-    LOG("main after join");
+    LOG_INFO("main after join");
 
     return 0;
 }

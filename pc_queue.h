@@ -27,12 +27,12 @@ public:
 
         while (0 == buf_.size()) {
             if (!has_work_todo()) {
-                LOG(" *** no work to do");
+                LOG_INFO(" *** no work to do");
 
                 return -1;
             }
 
-            LOG(" *** wait to consume. producers: %", n_producer_);
+            LOG_INFO(" *** wait to consume. producers: %", n_producer_);
 
             empty_.wait(mutex_);
         }
@@ -40,7 +40,7 @@ public:
         elem = buf_.front();
         buf_.pop();
 
-        LOG(" *** consumer consumes an element");
+        LOG_INFO(" *** consumer consumes an element");
 
         full_.notify_all();
         return 0;
@@ -57,7 +57,7 @@ public:
 
         buf_.push(elem);
 
-        LOG("produces an element");
+        LOG_INFO("produces an element");
         empty_.notify_all();
     }
 
@@ -70,7 +70,7 @@ public:
     {
         --n_producer_;
         if (0 == n_producer_) {
-            LOG("notify all consumers.");
+            LOG_INFO("notify all consumers.");
 
             empty_.notify_all();
         }

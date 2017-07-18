@@ -15,7 +15,7 @@ public:
     {
         pthread_mutex_init(&mutex_, NULL);
         
-        //LOG_METHOD();
+        LOG_METHOD();
     }
 
     MutexLock(const MutexLock&) = delete;
@@ -25,21 +25,21 @@ public:
     {
         pthread_mutex_destroy(&mutex_);
 
-        //LOG_METHOD();
+        LOG_METHOD();
     }
 
     void lock()
     {
         pthread_mutex_lock(&mutex_);
 
-        //LOG_METHOD();
+        LOG_METHOD();
     }
 
     void unlock()
     {
         pthread_mutex_unlock(&mutex_);
 
-        //LOG_METHOD();
+        LOG_METHOD();
     }
     
 private:
@@ -59,7 +59,7 @@ public:
     MutexLockGuard(MutexLock& mutex)
         : mutex_(mutex)
     {
-        //LOG_METHOD();
+        LOG_METHOD();
 
         mutex_.lock();
     }
@@ -69,7 +69,7 @@ public:
 
     ~MutexLockGuard()
     {
-        //LOG_METHOD();
+        LOG_METHOD();
 
         mutex_.unlock();
     }

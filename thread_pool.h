@@ -75,7 +75,7 @@ private:
             tp->pc_queue_.consume(c);
             c->run();
         }
-        LOG("a thread exit");
+        LOG_INFO("a consumer exit");
     }
 
     void begin_job()
@@ -86,7 +86,7 @@ private:
     void end_job()
     {
         pc_queue_.remove_a_producer();
-        LOG("producer exit.");
+        LOG_INFO("a producer exit.");
     }
 
 private:
