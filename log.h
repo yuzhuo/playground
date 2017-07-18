@@ -14,17 +14,19 @@ enum LogLevel {
     kWarning,
     kError,
     kCritical,
+    kOff,
 };
 
 #if __cplusplus >= 201103L
 #define __FUNCTION__ __func__
 #elif !defined(__FUNCTION__)
-#define __FUNCTION__ "__FUNCTION__ not supported!"
+#define __FUNCTION__ "macro __FUNCTION__ not supported!"
 #endif
 
 
 #ifdef NDEBUG
 
+#define LOG_OFF
 #define LOG_SET_LEVEL(lvl)
 #define LOG_SET_FILE(file)
 #define LOG_DEBUG(...)
@@ -38,7 +40,8 @@ enum LogLevel {
 
 #else
 
-#define LOG_SET_LEVEL(lvl) do { Logger::instance().set_level(lvl); }
+#define LOG_OFF() do { Logger::instance().set_level("off"); } while(0)
+#define LOG_SET_LEVEL(lvl) do { Logger::instance().set_level(lvl); } while(0)
 #define LOG_SET_FILE(file) do { Logger::instance().set_log_file(file); } while(0)
 #define LOG_DEBUG(...) LOG(kDebug, __VA_ARGS__)
 #define LOG_INFO(...) LOG(kInfo, __VA_ARGS__)
@@ -91,8 +94,11 @@ public:
 
     void set_level(const char* level)
     {
+        if (kOff == level_)
+            return;
+
         if (!strcmp(level, "debug"))
-            level_ = kInfo;
+            level_ = kDebug;
         else if (!strcmp(level, "info"))
             level_ = kInfo;
         else if (!strcmp(level, "warning"))
@@ -101,6 +107,8 @@ public:
             level_ = kError;
         else if (!strcmp(level, "critical"))
             level_ = kCritical;
+        else if (!strcmp(level, "off"))
+            level_ = kOff;
         else
             assert(!"level is not one of [debug, info, warning, error, critical]");
     }
