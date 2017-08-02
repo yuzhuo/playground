@@ -36,7 +36,7 @@ public:
             for (int i = 0; i < tmp.size(); ++i) {
                 int m = tmp[i];
                 if (parents_[m].size() <= 1) {
-                    parents_[tmp[i]].clear();
+                    parents_[m].clear();
                     s_.insert(m);
                 } else {
                     parents_[m].erase(find(parents_[m].begin(), parents_[m].end(), val));

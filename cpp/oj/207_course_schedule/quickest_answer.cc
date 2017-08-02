@@ -1,3 +1,9 @@
+#include <vector>
+#include <utility>
+#include <functional>
+#include <iostream>
+#include <queue>
+using namespace std;
 
 class Solution {
 public:
@@ -31,3 +37,13 @@ public:
         return false;
     }
 };
+
+int main()
+{
+    vector<pair<int, int>> vec;
+    vec.push_back(make_pair(0, 1));
+    Solution so;
+    cout << so.canFinish(2, vec) << endl;
+
+    return 0;
+}
