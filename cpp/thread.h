@@ -4,6 +4,11 @@
 
 #include <pthread.h>
 
+int get_cpu_count()
+{
+    return (int)sysconf(_SC_NPROCESSORS_ONLN);
+}
+
 class Thread
 {
 public:
