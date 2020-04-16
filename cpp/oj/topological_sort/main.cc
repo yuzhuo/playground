@@ -1,8 +1,8 @@
-
 #include <iostream>
 #include <utility>
 #include <algorithm>
 #include <queue>
+#include <stack>
 #include <map>
 #include <set>
 using namespace std;
@@ -14,120 +14,112 @@ class TopologicalSort
 public:
     TopologicalSort(vector<pair<int, int>>& edges)
     {
-        for (int i = 0; i < edges.size(); ++i) {
-            int n1 = edges[i].first;
-            int n2 = edges[i].second;
-            sons_[n1].push_back(n2);
-            parents_[n2].push_back(n1);
-            s_.insert(n1);
-            if (s_.end() != s_.find(n2))
-                s_.erase(n2);
+        for (auto pr : edges) {
+            nodes.insert(pr.first);
+            nodes.insert(pr.second);
+            if (adj.find(pr.first) == adj.end()) {
+                adj[pr.first] = {pr.second};
+            } else {
+                adj[pr.first].push_back(pr.second);
+            }
+
+            if (in_degrees.find(pr.second) != in_degrees.end()) {
+                in_degrees[pr.second] += 1;
+            } else {
+                in_degrees[pr.second] = 1;
+            }
         }
     }
 
     void kahn_algorithm()
     {
-        vector<int> vec;
-        while (!s_.empty()) {
-            int val = *s_.begin();
-            s_.erase(val);
-            vec.push_back(val);
-            vector<int> tmp = sons_[val];
-            for (int i = 0; i < tmp.size(); ++i) {
-                int m = tmp[i];
-                if (parents_[m].size() <= 1) {
-                    parents_[m].clear();
-                    s_.insert(m);
-                } else {
-                    parents_[m].erase(find(parents_[m].begin(), parents_[m].end(), val));
+        queue<int> q;
+        for (auto n : nodes) {
+            if (in_degrees.find(n) == in_degrees.end()) {
+                q.push(n);
+            }
+        }
+
+        queue<int> sq;
+        while (!q.empty()) {
+            int n = q.front();
+            q.pop();
+            sq.push(n);
+            auto it = adj.find(n);
+            if (it != adj.end()) {
+                for (auto node : adj[n]) {
+                    --in_degrees[node];
+                    if (in_degrees[node] == 0) {
+                        q.push(node);
+                    }
                 }
             }
         }
+
+        if (sq.size() == nodes.size()) {
+            while (!sq.empty()) {
+                cout << sq.front();
+                sq.pop();
+            }
+        } else {
+            cout << "there is a cycle in the graph." << endl;
+        }
+    }
+
+    void dfsSort() {
+        map<int, bool> visited;
+        for (auto n : nodes) {
+            visited[n] = false;
+        }
+
+        stack<int> s;
+        for (auto n : nodes) {
+            if (visited[n] == false) {
+                dfs(visited, n, s);
+            }
+        }
+
+        cout << "dfs: " << endl;
+        while (!s.empty()) {
+            cout << s.top() << endl;
+            s.pop();
+        }
+    }
+    
+    void dfs(map<int, bool> &visited, int node, stack<int> &s) {
+        visited[node] = true;
+        for (auto n : adj[node]) {
+            if (visited[n] == false) {
+                dfs(visited, n, s);
+            }
+        }
+
+        s.push(node);
+    }
         
-        for (auto it = parents_.begin(); it != parents_.end(); ++it) {
-            if (it->second.size() != 0) {
-                cout << "there is at least one cycle." << endl;
-                return;
-            }
-        }
-
-        for (int i = 0; i < vec.size(); ++i) {
-            cout << vec[i] << ", "; // don't care about the last comma
-        }
-        cout << endl;
-    }
-
-    bool dfs_visit(int val, vector<int>& sorted)
-    {
-        auto it = mark_.find(val);
-        if (mark_.end() != it) {
-            if (1 == it->second) {
-                cout << "there is at least one cycle." << endl;
-                return false;
-            } else {
-                return true;
-            }
-        }
-        mark_[val] = 1;
-
-        vector<int> tmp = sons_[val];
-        for (int i = 0; i < tmp.size(); ++i) {
-            if (!dfs_visit(tmp[i], sorted))
-                return false;
-        }
-
-        mark_[val] = 2;
-        sorted.push_back(val);
-        return true;
-    }
-
-    void dfs()
-    {
-        vector<int> vec;
-        for (auto it = sons_.begin(); it != sons_.end(); ++it) {
-            if (mark_.end() != mark_.find(it->first))
-                continue;
-
-            if (!dfs_visit(it->first, vec)) {
-                return;
-            }
-        }
-        cout << "sorted list: " << endl;
-        for (auto it = vec.rbegin(); it != vec.rend(); ++it) {
-            cout << *it << ", "; // don't care about the last comma
-        }
-        cout << endl;
-    }
 
 private:
-    // dfs
-    map<int, vector<int>> sons_;
-    map<int, int> mark_;
-
-    // bfs
-    map<int, vector<int>> parents_;
-    set<int> s_;
+    set<int> nodes;
+    map<int, int> in_degrees;
+    map<int, vector<int>> adj;
 };
 
 
 int main()
 {
     vector<pair<int, int>> edges;
-    edges.push_back(make_pair(5, 11));
-    edges.push_back(make_pair(11, 2));
-    edges.push_back(make_pair(7, 11));
-    edges.push_back(make_pair(7, 8));
-    edges.push_back(make_pair(3, 8));
-    edges.push_back(make_pair(3, 10));
-    edges.push_back(make_pair(11, 9));
-    edges.push_back(make_pair(11, 10));
-    edges.push_back(make_pair(8, 9));
-
-    TopologicalSort ts1(edges);
-    ts1.dfs();
+    edges.push_back(make_pair(5, 2));
+    edges.push_back(make_pair(5, 0));
+    edges.push_back(make_pair(4, 0));
+    edges.push_back(make_pair(4, 1));
+    edges.push_back(make_pair(2, 3));
+    edges.push_back(make_pair(3, 1));
 
     TopologicalSort ts2(edges);
     ts2.kahn_algorithm();
+
+    TopologicalSort ts1(edges);
+    ts1.dfsSort();
 
     return 0;
 }
